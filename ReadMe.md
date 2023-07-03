@@ -1,1 +1,1 @@
-This repository contains bash scripts I used for personal testing
+This repository contains bash scripts which I mostly for personal testing
