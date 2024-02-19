@@ -3,7 +3,7 @@
 # Author: Kipmyk
 # Date: 2023-07-03
 # Description: This script tests the average page load time for a given URL. It can be set to run any number of tests and then averages the results.
-# After testing, it removes any downloaded files.
+# After testing, it removes the directory created during testing and its contents, ensuring no other directories are affected.
 #
 # Usage: ./speedtest.sh <url> <iterations>
 # Example: ./speedtest.sh www.example.com 20
@@ -16,7 +16,9 @@ times=""
 echo "Testing load times for $url"
 
 for ((i = 1; i <= $iterations; i++)); do
-    result=$(wget -p $url 2>&1 | tail -n2 | head -n1)
+    # Create a unique directory for each test iteration
+    test_dir=$(mktemp -d)
+    result=$(wget -P $test_dir $url 2>&1 | tail -n2 | head -n1)
     prefix="Total wall clock time: "
     time=${result#$prefix}
 
@@ -35,10 +37,17 @@ for ((i = 1; i <= $iterations; i++)); do
     fi
 
     echo "Test $i loaded in $time seconds"
+
+    # Store the directory path for cleanup
+    if [ "$dirs_to_cleanup" == "" ]; then
+        dirs_to_cleanup=$test_dir
+    else
+        dirs_to_cleanup="$dirs_to_cleanup $test_dir"
+    fi
 done
 
-# Remove downloaded files
-rm -rf $url/*
+# Remove downloaded directories and their contents
+rm -rf $dirs_to_cleanup
 
 # Results
 echo "There were $iterations page load tests for $url"
