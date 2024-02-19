@@ -3,6 +3,7 @@
 # Author: Kipmyk
 # Date: 2023-07-03
 # Description: This script tests the average page load time for a given URL. It can be set to run any number of tests and then averages the results.
+# After testing, it removes any downloaded files.
 #
 # Usage: ./speedtest.sh <url> <iterations>
 # Example: ./speedtest.sh www.example.com 20
@@ -35,6 +36,9 @@ for ((i = 1; i <= $iterations; i++)); do
 
     echo "Test $i loaded in $time seconds"
 done
+
+# Remove downloaded files
+rm -rf $url/*
 
 # Results
 echo "There were $iterations page load tests for $url"
